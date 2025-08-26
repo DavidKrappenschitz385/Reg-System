@@ -264,9 +264,10 @@ if (isset($_POST['request_role'])) {
 
         function setRequired(elements, isRequired) {
             elements.forEach(function(el) {
+                el.disabled = !isRequired;
                 // team_id is optional for players, and several fields are optional for coaches.
-                if (el.name === 'team_id' || el.name === 'coach_team_id' || el.name === 'experience_years' || el.name === 'certifications') {
-                    // Do not make these fields required
+                if (el.name === 'team_id' || el.name === 'coach_team_id' || el.name === 'experience_years' || el.name === 'certifications' || el.id === 'photo_coach') {
+                    el.required = false;
                 } else {
                     el.required = isRequired;
                 }
