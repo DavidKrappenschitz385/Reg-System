@@ -33,7 +33,7 @@ $coach_requests = [];
 
 // Fetch player requests with details
 $player_query = "
-    SELECT u.id, u.full_name, u.email, u.username, u.eligibility_document, p.photo, p.age, p.gender, p.address, p.contact_number, s.name as sport_name, t.name as team_name
+    SELECT u.id, u.full_name, u.email, u.username, u.eligibility_document, u.photo, p.age, p.gender, p.address, p.contact_number, s.name as sport_name, t.name as team_name
     FROM `users` u
     LEFT JOIN `players` p ON u.id = p.user_id
     LEFT JOIN `sports` s ON p.sport_id = s.id
@@ -49,7 +49,7 @@ if ($player_result) {
 
 // Fetch coach requests
 $coach_query = "
-    SELECT u.id, u.full_name, u.email, u.username, u.eligibility_document, c.experience_years, c.certifications, s.name as sport_name, t.name as team_name
+    SELECT u.id, u.full_name, u.email, u.username, u.eligibility_document, u.photo, c.experience_years, c.certifications, s.name as sport_name, t.name as team_name
     FROM `users` u
     LEFT JOIN `coaches` c ON u.id = c.user_id
     LEFT JOIN `sports` s ON c.sport_id = s.id
@@ -86,7 +86,7 @@ if ($coach_result) {
         <tbody>
         <?php foreach ($player_requests as $row) { ?>
             <tr>
-                <td><img src="images/<?php echo $row['photo']; ?>" alt="Player Photo" style="width: 50px; height: 50px;"></td>
+                <td><img src="../uploads/images/<?php echo $row['photo']; ?>" alt="Player Photo" style="width: 50px; height: 50px;"></td>
                 <td><?php echo htmlspecialchars($row['full_name']); ?></td>
                 <td><?php echo htmlspecialchars($row['email']); ?></td>
                 <td><?php echo htmlspecialchars($row['username']); ?></td>
@@ -98,7 +98,7 @@ if ($coach_result) {
                 <td><?php echo htmlspecialchars($row['team_name'] ?? 'N/A'); ?></td>
                 <td>
                     <?php if (!empty($row['eligibility_document'])) { ?>
-                        <a href="#" data-doc="view_document.php?doc=<?php echo urlencode($row['eligibility_document']); ?>" data-user-id="<?php echo $row['id']; ?>" class="btn btn-info btn-sm view-doc-btn">View Document</a>
+                        <a href="#" data-doc="../uploads/documents/<?php echo urlencode($row['eligibility_document']); ?>" data-user-id="<?php echo $row['id']; ?>" class="btn btn-info btn-sm view-doc-btn">View Document</a>
                     <?php } else { ?>
                         N/A
                     <?php } ?>
@@ -189,6 +189,7 @@ if ($coach_result) {
     <table class="table table-striped table-hover table-bordered" id="coach-data">
         <thead class="thead-dark">
         <tr>
+            <th>Photo</th>
             <th>Full Name</th>
             <th>Email</th>
             <th>Username</th>
@@ -203,16 +204,17 @@ if ($coach_result) {
         <tbody>
         <?php foreach ($coach_requests as $row) { ?>
             <tr>
+                <td><img src="../uploads/images/<?php echo $row['photo']; ?>" alt="Coach Photo" style="width: 50px; height: 50px;"></td>
                 <td><?php echo htmlspecialchars($row['full_name']); ?></td>
                 <td><?php echo htmlspecialchars($row['email']); ?></td>
                 <td><?php echo htmlspecialchars($row['username']); ?></td>
-                <td><?php echo htmlspecialchars($row['experience_years'] ?? 'N/A'); ?> years</td>
+                <td><?php echo htmlspecialchars($row['experience_years'] ?? 'N/A') . ' years'; ?></td>
                 <td><?php echo htmlspecialchars($row['certifications'] ?? 'N/A'); ?></td>
                 <td><?php echo htmlspecialchars($row['sport_name'] ?? 'N/A'); ?></td>
                 <td><?php echo htmlspecialchars($row['team_name'] ?? 'N/A'); ?></td>
                 <td>
                     <?php if (!empty($row['eligibility_document'])) { ?>
-                        <a href="#" data-doc="view_document.php?doc=<?php echo urlencode($row['eligibility_document']); ?>" data-user-id="<?php echo $row['id']; ?>" class="btn btn-info btn-sm view-doc-btn">View Document</a>
+                        <a href="#" data-doc="../uploads/documents/<?php echo urlencode($row['eligibility_document']); ?>" data-user-id="<?php echo $row['id']; ?>" class="btn btn-info btn-sm view-doc-btn">View Document</a>
                     <?php } else { ?>
                         N/A
                     <?php } ?>
