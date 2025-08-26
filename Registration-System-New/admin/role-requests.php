@@ -33,7 +33,7 @@ $coach_requests = [];
 
 // Fetch player requests with details
 $player_query = "
-    SELECT u.*, p.photo, p.age, p.gender, p.address, p.contact_number, s.name as sport_name, t.name as team_name
+    SELECT u.id, u.full_name, u.email, u.username, u.eligibility_document, p.photo, p.age, p.gender, p.address, p.contact_number, s.name as sport_name, t.name as team_name
     FROM `users` u
     LEFT JOIN `players` p ON u.id = p.user_id
     LEFT JOIN `sports` s ON p.sport_id = s.id
@@ -49,7 +49,7 @@ if ($player_result) {
 
 // Fetch coach requests
 $coach_query = "
-    SELECT u.*, c.experience_years, c.certifications, s.name as sport_name, t.name as team_name
+    SELECT u.id, u.full_name, u.email, u.username, u.eligibility_document, c.experience_years, c.certifications, s.name as sport_name, t.name as team_name
     FROM `users` u
     LEFT JOIN `coaches` c ON u.id = c.user_id
     LEFT JOIN `sports` s ON c.sport_id = s.id
