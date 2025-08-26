@@ -32,7 +32,7 @@ if (isset($_POST['request_role'])) {
 
         if (in_array(strtolower($eligibility_document_ext), $allowed_ext)) {
             $eligibility_document_name = 'doc_' . $user_id . '_' . date('YmdHis') . '.' . $eligibility_document_ext;
-            $document_path = 'admin/documents/' . $eligibility_document_name;
+            $document_path = 'uploads/documents/' . $eligibility_document_name;
 
             if (!move_uploaded_file($_FILES['eligibility_document']['tmp_name'], $document_path)) {
                 $error = "Failed to upload eligibility document.";
@@ -44,9 +44,20 @@ if (isset($_POST['request_role'])) {
         $error = "Eligibility document is required.";
     }
 
+    $photo_name = '';
+    if (!empty($_FILES['photo']['name'])) {
+        $photo = explode('.', $_FILES['photo']['name']);
+        $photo_ext = end($photo);
+        $photo_name = 'user_' . $user_id . '_' . date('YmdHis') . '.' . $photo_ext;
+        $photo_path = 'uploads/images/' . $photo_name;
+        if (!move_uploaded_file($_FILES['photo']['tmp_name'], $photo_path)) {
+            $error = "Failed to upload photo.";
+        }
+    }
+
     if (empty($error)) {
-        $stmt = mysqli_prepare($db_con, "UPDATE `users` SET `role` = ?, `status` = 'pending', `eligibility_document` = ? WHERE `id` = ?");
-        mysqli_stmt_bind_param($stmt, "ssi", $role, $eligibility_document_name, $user_id);
+        $stmt = mysqli_prepare($db_con, "UPDATE `users` SET `role` = ?, `status` = 'pending', `eligibility_document` = ?, `photo` = ? WHERE `id` = ?");
+        mysqli_stmt_bind_param($stmt, "sssi", $role, $eligibility_document_name, $photo_name, $user_id);
         $result = mysqli_stmt_execute($stmt);
 
         if ($result) {
@@ -65,20 +76,11 @@ if (isset($_POST['request_role'])) {
                 $team_id = !empty($_POST['team_id']) ? $_POST['team_id'] : null;
                 $contact_number = $_POST['contact_number'] ?? '';
                 $address = $_POST['address'] ?? '';
-                $photo_name = '';
-                if (!empty($_FILES['photo']['name'])) {
-                    $photo = explode('.', $_FILES['photo']['name']);
-                    $photo_ext = end($photo);
-                    $photo_name = $player_id . date('YmdHis') . '.' . $photo_ext;
-                }
 
                 $stmt = mysqli_prepare($db_con, "INSERT INTO `players`(`user_id`, `player_id`, `full_name`, `age`, `gender`, `sport_id`, `team_id`, `contact_number`, `address`, `photo`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 mysqli_stmt_bind_param($stmt, "issisiiiss", $user_id, $player_id, $full_name, $age, $gender, $sport_id, $team_id, $contact_number, $address, $photo_name);
                 mysqli_stmt_execute($stmt);
 
-                if (!empty($photo_name)) {
-                    move_uploaded_file($_FILES['photo']['tmp_name'], 'admin/images/' . $photo_name);
-                }
             } elseif ($role === 'coach') {
                 $experience_years = $_POST['experience_years'] ?? 0;
                 $certifications = $_POST['certifications'] ?? '';
@@ -229,6 +231,10 @@ if (isset($_POST['request_role'])) {
                             }
                             ?>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="photo_coach">ID Picture</label>
+                        <input name="photo" type="file" class="form-control" id="photo_coach">
                     </div>
                     <div class="form-group">
                         <label for="eligibility_document_coach">Eligibility Document (PDF, JPG, PNG)</label>

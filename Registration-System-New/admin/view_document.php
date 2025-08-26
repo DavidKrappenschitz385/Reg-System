@@ -16,14 +16,16 @@ if (!isset($_GET['doc']) || empty($_GET['doc'])) {
     exit;
 }
 
-$doc_name = basename($_GET['doc']);
-$doc_path = 'documents/' . $doc_name;
+$doc_path = realpath(dirname(__FILE__) . '/' . $_GET['doc']);
+$allowed_path = realpath(dirname(__FILE__) . '/../uploads/documents');
 
-if (!file_exists($doc_path)) {
+if (!$doc_path || strpos($doc_path, $allowed_path) !== 0 || !file_exists($doc_path)) {
     header('HTTP/1.0 404 Not Found');
-    echo 'Document not found.';
+    echo 'Document not found or not accessible.';
     exit;
 }
+
+$doc_name = basename($doc_path);
 
 $current_user_username = $_SESSION['user_login'];
 $stmt = mysqli_prepare($db_con, "SELECT `id`, `role` FROM `users` WHERE `username` = ? LIMIT 1");
