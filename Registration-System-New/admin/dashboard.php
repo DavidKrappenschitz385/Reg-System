@@ -105,6 +105,138 @@
   </div>
 </div>
 <hr>
+<?php
+$player_requests = [];
+$coach_requests = [];
+
+// Fetch player requests with details
+$player_query = "
+    SELECT u.id, u.full_name, u.email, u.username, u.eligibility_document, u.photo, p.age, p.gender, p.address, p.contact_number, s.name as sport_name, t.name as team_name
+    FROM `users` u
+    LEFT JOIN `players` p ON u.id = p.user_id
+    LEFT JOIN `sports` s ON p.sport_id = s.id
+    LEFT JOIN `teams` t ON p.team_id = t.id
+    WHERE u.status = 'pending' AND u.role = 'player'
+";
+$player_result = mysqli_query($db_con, $player_query);
+if ($player_result) {
+    while ($row = mysqli_fetch_assoc($player_result)) {
+        $player_requests[] = $row;
+    }
+}
+
+// Fetch coach requests
+$coach_query = "
+    SELECT u.id, u.full_name, u.email, u.username, u.eligibility_document, u.photo, c.experience_years, c.certifications, s.name as sport_name, t.name as team_name
+    FROM `users` u
+    LEFT JOIN `coaches` c ON u.id = c.user_id
+    LEFT JOIN `sports` s ON c.sport_id = s.id
+    LEFT JOIN `teams` t ON c.team_id = t.id
+    WHERE u.status = 'pending' AND u.role = 'coach'
+";
+$coach_result = mysqli_query($db_con, $coach_query);
+if ($coach_result) {
+    while ($row = mysqli_fetch_assoc($coach_result)) {
+        $coach_requests[] = $row;
+    }
+}
+?>
+
+<h3 class="text-secondary">Player Requests</h3>
+<div class="table-responsive">
+    <table class="table table-striped table-hover table-bordered" id="player-data">
+        <thead class="thead-dark">
+        <tr>
+            <th>Photo</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Username</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Address</th>
+            <th>Contact #</th>
+            <th>Sport</th>
+            <th>Team</th>
+            <th>Document</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($player_requests as $row) { ?>
+            <tr>
+                <td><img src="../uploads/images/<?php echo $row['photo']; ?>" alt="Player Photo" style="width: 50px; height: 50px;"></td>
+                <td><?php echo htmlspecialchars($row['full_name']); ?></td>
+                <td><?php echo htmlspecialchars($row['email']); ?></td>
+                <td><?php echo htmlspecialchars($row['username']); ?></td>
+                <td><?php echo htmlspecialchars($row['age']); ?></td>
+                <td><?php echo htmlspecialchars($row['gender']); ?></td>
+                <td><?php echo htmlspecialchars($row['address']); ?></td>
+                <td><?php echo htmlspecialchars($row['contact_number']); ?></td>
+                <td><?php echo htmlspecialchars($row['sport_name'] ?? 'N/A'); ?></td>
+                <td><?php echo htmlspecialchars($row['team_name'] ?? 'N/A'); ?></td>
+                <td>
+                    <?php if (!empty($row['eligibility_document'])) { ?>
+                        <a href="index.php?page=view_document&doc=<?php echo urlencode($row['eligibility_document']); ?>" class="btn btn-info btn-sm">View Document</a>
+                    <?php } else { ?>
+                        N/A
+                    <?php } ?>
+                </td>
+                <td>
+                    <a href="index.php?approve=<?php echo $row['id']; ?>" class="btn btn-success btn-sm">Approve</a>
+                    <a href="index.php?decline=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm">Decline</a>
+                </td>
+            </tr>
+        <?php } ?>
+        </tbody>
+    </table>
+</div>
+
+<h3 class="text-secondary mt-5">Coach Requests</h3>
+<div class="table-responsive">
+    <table class="table table-striped table-hover table-bordered" id="coach-data">
+        <thead class="thead-dark">
+        <tr>
+            <th>Photo</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Username</th>
+            <th>Experience</th>
+            <th>Certifications</th>
+            <th>Sport</th>
+            <th>Team</th>
+            <th>Document</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($coach_requests as $row) { ?>
+            <tr>
+                <td><img src="../uploads/images/<?php echo $row['photo']; ?>" alt="Coach Photo" style="width: 50px; height: 50px;"></td>
+                <td><?php echo htmlspecialchars($row['full_name']); ?></td>
+                <td><?php echo htmlspecialchars($row['email']); ?></td>
+                <td><?php echo htmlspecialchars($row['username']); ?></td>
+                <td><?php echo htmlspecialchars($row['experience_years'] ?? 'N/A') . ' years'; ?></td>
+                <td><?php echo htmlspecialchars($row['certifications'] ?? 'N/A'); ?></td>
+                <td><?php echo htmlspecialchars($row['sport_name'] ?? 'N/A'); ?></td>
+                <td><?php echo htmlspecialchars($row['team_name'] ?? 'N/A'); ?></td>
+                <td>
+                    <?php if (!empty($row['eligibility_document'])) { ?>
+                        <a href="index.php?page=view_document&doc=<?php echo urlencode($row['eligibility_document']); ?>" class="btn btn-info btn-sm">View Document</a>
+                    <?php } else { ?>
+                        N/A
+                    <?php } ?>
+                </td>
+                <td>
+                    <a href="index.php?approve=<?php echo $row['id']; ?>" class="btn btn-success btn-sm">Approve</a>
+                    <a href="index.php?decline=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm">Decline</a>
+                </td>
+            </tr>
+        <?php } ?>
+        </tbody>
+    </table>
+</div>
+
+<hr>
 <h3>Players</h3>
 <table class="table  table-striped table-hover table-bordered" id="data">
   <thead class="thead-dark">
