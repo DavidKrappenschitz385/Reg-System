@@ -23,7 +23,7 @@ if (isset($_GET['approve'])) {
     $stmt = mysqli_prepare($db_con, "UPDATE `users` SET `status` = 'approved' WHERE `id` = ?");
     mysqli_stmt_bind_param($stmt, "i", $user_id);
     mysqli_stmt_execute($stmt);
-    header('Location: index.php?page=role-requests');
+    header('Location: index.php?page=dashboard');
     exit;
 }
 
@@ -32,7 +32,7 @@ if (isset($_GET['decline'])) {
     $stmt = mysqli_prepare($db_con, "UPDATE `users` SET `status` = 'declined' WHERE `id` = ?");
     mysqli_stmt_bind_param($stmt, "i", $user_id);
     mysqli_stmt_execute($stmt);
-    header('Location: index.php?page=role-requests');
+    header('Location: index.php?page=dashboard');
     exit;
 }
 ?>
